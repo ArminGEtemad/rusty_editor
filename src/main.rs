@@ -1,5 +1,7 @@
+mod document;
+
 use std::env; // command-line arguments 
-use std::fs; // access to functions to loading files
+use document::Document; // in order to use Document
 
 fn main() {
     // get CLI args
@@ -13,10 +15,10 @@ fn main() {
 
     let filename = &args[1]; // referencing since args is owned and one argument
                                       // cannot be moved to another owner
-    match fs::read_to_string(filename) { // reads entire content into string
-        Ok(contents) => {             // file read successfully
+    match Document::open(filename) {
+        Ok(doc) => {             // file read successfully
             println!("--- Contents of {} ---", filename);
-            println!("{}", contents);
+            doc.display();
         }
         Err(error) => {     // something went wrong
             eprintln!("Error reading {}: {}", filename, error);
