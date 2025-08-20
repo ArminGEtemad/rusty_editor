@@ -1,9 +1,11 @@
 mod document;
+mod screen;
 
 use std::env; // command-line arguments 
 use document::Document; // in order to use Document
+use screen::Screen;
 
-fn main() {
+fn main() -> std::io::Result<()> {
     // get CLI args
     let args: Vec<String> = env::args().collect(); // returning an iterator over command-line
                                                    // args is owned 
@@ -15,14 +17,23 @@ fn main() {
 
     let filename = &args[1]; // referencing since args is owned and one argument
                                       // cannot be moved to another owner
-    match Document::open(filename) {
-        Ok(doc) => {             // file read successfully
-            println!("--- Contents of {} ---", filename);
-            doc.display();
-        }
-        Err(error) => {     // something went wrong
-            eprintln!("Error reading {}: {}", filename, error);
+    let doc = match Document::open(filename) {
+        Ok(d) => d,
+        Err(err) => {
+            eprintln!("Error Reading {}, {}", filename, err);
             std::process::exit(1);
-        }
-    }
+        },
+    };
+
+    Screen::enable_raw()?;
+    Screen::clear_screen()?;
+    Screen::draw_lines(&doc.lines())?;
+
+    use std::io::{stdin, Read};
+    let _ = stdin().read(&mut [0u8])?; // waits for a single byte of input
+                                            // and throws it into a buffer
+
+    Screen::disable_raw()?; // gets out of the clean screen after a single byte of input
+    Ok(())
+
 }

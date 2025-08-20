@@ -21,10 +21,16 @@ impl Document {
 
         Ok(Self { lines })
     }
+    /*
     pub fn display(&self) {
         for (i, line) in self.lines.iter().enumerate() {
             println!("{:>4} | {}", i + 1, line);
         }
+    }
+     */
+
+    pub fn lines(&self) -> &[String] {
+        &self.lines
     }
 }
 
