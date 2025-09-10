@@ -3,7 +3,7 @@ use std::io; // io needed for input, output errors
 
 // a struct to hold the content
 pub struct Document {
-    lines: Vec<String>, // each line stored as a separate string
+    pub lines: Vec<String>, // each line stored as a separate string
 }
 
 // implementing Document method
