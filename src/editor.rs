@@ -42,6 +42,15 @@ impl Editor {
         Ok(())
     }
 
+    fn clamp_cursor_x(&mut self) { // getting to the end of the next line if prev line is longer
+        if let Some(line) = self.doc.lines.get(self.cursor_y) {
+            self.cursor_x = self.cursor_x.min(line.len());
+        } else {
+            self.cursor_x = 0;
+        }
+    }
+
+
     fn handle_input(&mut self) -> io::Result<bool> {
         if event::poll(std::time::Duration::from_millis(500))? {
             if let Event::Key(KeyEvent { code, modifiers, .. }) = event::read()? {
@@ -50,13 +59,13 @@ impl Editor {
                         return Ok(true);
                     } 
                     KeyCode::Up => {
-                        if self.cursor_y > 0 {
-                            self.cursor_y -= 1;
-                        }
+                        self.cursor_y = self.cursor_y.saturating_sub(1);
+                        self.clamp_cursor_x();
                     }
                     KeyCode::Down => {
                         if self.cursor_y < self.doc.lines.len().saturating_sub(1) {
                             self.cursor_y += 1;
+                            self.clamp_cursor_x();
                         }
                     }
                     KeyCode::Left => {
@@ -73,16 +82,17 @@ impl Editor {
                     }
                     KeyCode::Char(c) => {
                         if let Some(line) = self.doc.lines.get_mut(self.cursor_y) {
-                            if self.cursor_x < line.len() {
-                                line.insert(self.cursor_x, c);
-                                self.cursor_x += 1;
+                            if self.cursor_x > line.len() {
+                                self.cursor_x = line.len();
                             }
+                            line.insert(self.cursor_x, c);
+                            self.cursor_x += 1;
                         }
                     }
                     KeyCode::Backspace => {
                         if self.cursor_x > 0 {
                             if let Some(line) = self.doc.lines.get_mut(self.cursor_y) {
-                                if self.cursor_x < line.len() {
+                                if self.cursor_x <= line.len() {
                                     line.remove(self.cursor_x - 1);
                                     self.cursor_x -= 1;
                                 }
