@@ -25,6 +25,6 @@ fn main() -> std::io::Result<()> {
             std::process::exit(1);
         },
     };
-    let mut editor = Editor::new(doc);
+    let mut editor = Editor::new(doc, filename.clone());
     editor.run()
 }
