@@ -19,6 +19,12 @@ impl Document {
     pub fn lines(&self) -> &[String] {
         &self.lines
     }
+
+    pub fn empty() -> Self {
+        Self {
+            lines: vec![String::new()],
+        }
+    }
 }
 
 

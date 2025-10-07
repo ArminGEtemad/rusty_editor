@@ -23,11 +23,16 @@ fn main() -> std::io::Result<()> {
     let doc = match Document::open(filename) {
         Ok(d) => d,
         Err(err) => {
-            eprintln!("Error Reading {}, {}", filename, err);
-            std::process::exit(1);
-        },
+            if err.kind() == std::io::ErrorKind::NotFound {
+                Document::empty()
+            } else {
+                eprintln!("Error reading {}: {}", filename, err);
+                std::process::exit(1);
+            }
+        }
     };
-    let mut editor = Editor::new(doc, filename.clone());
+
+    let mut editor = Editor::new(doc, filename.to_string());
 
     match editor.run() {
         Ok(_) => Ok(()),
