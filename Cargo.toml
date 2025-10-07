@@ -1,7 +1,12 @@
 [package]
 name = "rusty_editor"
-version = "0.1.0"
+version = "1.0.0"
+authors = ["Armin Ghorbanietemad"]
 edition = "2024"
+license = "MIT"
+description = "A simple terminal-based text editor written in Rust."
+readme = "README.md"
 
 [dependencies]
 crossterm = "0.29"
+scopeguard = "1.2.0"

@@ -26,6 +26,11 @@ impl Editor {
 
     pub fn run(&mut self) -> io::Result<()> {
         Screen::enable_raw()?;
+
+        let _guard = scopeguard::guard((), |_| {
+            let _ = Screen::disable_raw();
+        });
+
         loop {
             Screen::clear_screen()?;
             self.draw()?;
@@ -83,7 +88,7 @@ impl Editor {
                         // Stopping the user to quit if unsaved changes first
                         if self.dirty {
                             self.show_message("Usaved Changes. Ctrl+S to save or Ctrl+Q to force Quit!")?;
-                            std::thread::sleep(std::time::Duration::from_secs(5)); 
+                            std::thread::sleep(std::time::Duration::from_secs(3)); 
                             self.dirty = false; // if Ctrl+Q is pressed again can quit
                             return  Ok(false);
                         } else {

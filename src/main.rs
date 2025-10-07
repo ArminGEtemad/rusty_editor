@@ -6,6 +6,8 @@ use std::env; // command-line arguments
 use document::Document; // in order to use Document
 use editor::Editor;
 
+use crate::screen::Screen;
+
 fn main() -> std::io::Result<()> {
     // get CLI args
     let args: Vec<String> = env::args().collect(); // returning an iterator over command-line
@@ -26,5 +28,13 @@ fn main() -> std::io::Result<()> {
         },
     };
     let mut editor = Editor::new(doc, filename.clone());
-    editor.run()
+
+    match editor.run() {
+        Ok(_) => Ok(()),
+        Err(err) => {
+            let _ = Screen::disable_raw();
+            eprintln!("Editor Crashed: {}", err);
+            Err(err)
+        }
+    }
 }
